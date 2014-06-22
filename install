@@ -4,9 +4,40 @@
 
 
 ARDUINO_PATH=""
+ARDUINO_BOARD="micro"
 SKETCHBOOK_PATH=""
-BOARD_ID="leonardo9"
-BOARD_NAME="Arduino Leonardo 9 bits serial"
+LANGUE=$(echo $LANG | cut -d '_' -f1)
+
+
+I=0
+for var in "$@"
+do
+	if [ "$var" == "-b" -o "$var" == "--board" ]; then
+		I2=$(($I + 2 ))
+		ARDUINO_BOARD=${!I2}
+	fi
+	I=$(($I + 1))
+done
+
+
+BOARD_ID=${ARDUINO_BOARD}_9
+BOARD_NAME="Arduino $ARDUINO_BOARD 9 bits serial"
+
+I=0
+for var in "$@"
+do
+	if [ "$var" == "-n" -o "$va"r == "--name" ]; then
+		I2=$(($I + 2 ))
+		BOARD_NAME=${!I2}
+	elif [ "$var" == "-i" -o "$var" == "--id" ]; then
+		I2=$(($I + 2 ))
+		BOARD_ID=${!I2}
+	fi
+	I=$(($I + 1))
+done
+
+
+
 
 function help
 {
@@ -14,7 +45,7 @@ function help
 
 Srcipt d'installation des différents composants
 Usage:
-	install [ ARDUINO_PATH [ SKETCHBOOK_PATH [ NEW_BOARD_NAME [ NEW_BOARD_ID ] ] ] ]
+	install  ARDUINO_PATH  SKETCHBOOK_PATH OPTIONS
 		ARDUINO_PATH: Le chemin du dossier de configuration ( contenant le dossier 'hardware' )
 			L'utilisateur doit avoir accès en R/W aux différents sous dossiers et sous fichiers
 			pour que l'installation se déroule correctement
@@ -23,12 +54,60 @@ Usage:
 		SKETCHBOOK_PATH: Le chemin de votre sketchbook d'Arduino
 			Si la valeur n'est pas précisée en argument, elle vous sera demandée lors de l'exécution
 		
-		NEW_BOARD_NAME (defaut: '$BOARD_NAME' ): Le nom de la carte, tel qu'il s'affichera dans l'IDE Arduino
+		OPTIONS:
+		  -n | --name NEW_BOARD_NAME (defaut: '$BOARD_NAME' ): Le nom de la carte, tel qu'il s'affichera dans l'IDE Arduino
 		
-		NEW_BOARD_ID (defaut: '$BOARD_ID' ): L'id (interne à l'IDE ARDUINO) de la carte
+		  -id | --id NEW_BOARD_ID (defaut: '$BOARD_ID' ): L'id (interne à l'IDE ARDUINO) de la carte
+		
+		  -b | --board BOARD: La carte cible (defaut: $ARDUINO_BOARD)
+			 Carte supportées parmi:
+			   nano168
+			   nano328
+			   mega2560
+			   mega
+			   uno
+			   leonardo
+			   micro
+			   duemilanove328
+			   duemilanove168
+						
 		
 EOF
-	echo "$help_msg"
+
+	read -d '' help_msg_en << EOF
+Various component installation Script
+Usage:
+	install  ARDUINO_PATH  SKETCHBOOK_PATH OPTIONS
+		ARDUINO_PATH: The arduino configuration folder ( which contains the folder 'hardware' )
+			The user MUST have acces in R/W to the various subfolders and subfiles
+			to correctly install it
+									
+		SKETCHBOOK_PATH: The path of your arduino sketchbook
+		
+		OPTIONS:
+		  -n | --name NEW_BOARD_NAME (defaut: '$BOARD_NAME' ): The name of the board which will show in the IDE Arduino
+		
+		  -id | --id NEW_BOARD_ID (defaut: '$BOARD_ID' ): The id (IDE Arduino internal parameter) of the board
+		
+		  -b | --board BOARD: The target board (defaut: $ARDUINO_BOARD)
+			 Supported boards:
+			   nano168
+			   nano328
+			   mega2560
+			   mega
+			   uno
+			   leonardo
+			   micro
+			   duemilanove328
+			   duemilanove168
+						
+		
+EOF
+	if [ $LANGUE == "fr" ]; then
+		echo "$help_msg"
+	else
+		echo "$help_msg_en"
+	fi
 	exit 0
 	
 }
@@ -36,7 +115,148 @@ EOF
 function install
 {
 		
-		read -d '' to_append << EOF
+		read -d '' board_leonardo << EOF
+
+
+############################################################## 
+
+${BOARD_ID}.name=$BOARD_NAME
+${BOARD_ID}.upload.protocol=avr109
+${BOARD_ID}.upload.maximum_size=28672
+${BOARD_ID}.upload.speed=57600
+${BOARD_ID}.upload.disable_flushing=true
+${BOARD_ID}.bootloader.low_fuses=0xff
+${BOARD_ID}.bootloader.high_fuses=0xd8
+${BOARD_ID}.bootloader.extended_fuses=0xcb
+${BOARD_ID}.bootloader.path=caterina
+${BOARD_ID}.bootloader.file=Caterina-Leonardo.hex
+${BOARD_ID}.bootloader.unlock_bits=0x3F
+${BOARD_ID}.bootloader.lock_bits=0x2F
+${BOARD_ID}.build.mcu=atmega32u4
+${BOARD_ID}.build.f_cpu=16000000L
+${BOARD_ID}.build.vid=0x2341
+${BOARD_ID}.build.pid=0x8036
+${BOARD_ID}.build.core=arduino
+${BOARD_ID}.build.variant=leonardo
+${BOARD_ID}.build.cppoption1=-fno-use-cxa-atexit
+EOF
+
+read -d '' board_uno << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=arduino
+$BOARD_ID.upload.maximum_size=32256
+$BOARD_ID.upload.speed=115200
+$BOARD_ID.bootloader.low_fuses=0xff
+$BOARD_ID.bootloader.high_fuses=0xde
+$BOARD_ID.bootloader.extended_fuses=0x05
+$BOARD_ID.bootloader.path=optiboot
+$BOARD_ID.bootloader.file=optiboot_atmega328.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega328p
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=standard
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
+
+read -d '' board_duemilanove328 << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=arduino
+$BOARD_ID.upload.maximum_size=30720
+$BOARD_ID.upload.speed=57600
+$BOARD_ID.bootloader.low_fuses=0xFF
+$BOARD_ID.bootloader.high_fuses=0xDA
+$BOARD_ID.bootloader.extended_fuses=0x05
+$BOARD_ID.bootloader.path=atmega
+$BOARD_ID.bootloader.file=ATmegaBOOT_168_$BOARD_ID.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega328p
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=standard
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
+
+read -d '' board_duemilanove168 << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=arduino
+$BOARD_ID.upload.maximum_size=14336
+$BOARD_ID.upload.speed=19200
+$BOARD_ID.bootloader.low_fuses=0xff
+$BOARD_ID.bootloader.high_fuses=0xdd
+$BOARD_ID.bootloader.extended_fuses=0x00
+$BOARD_ID.bootloader.path=atmega
+$BOARD_ID.bootloader.file=ATmegaBOOT_168_$BOARD_ID.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega168
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=standard
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
+
+
+read -d '' board_nano328 << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=arduino
+$BOARD_ID.upload.maximum_size=30720
+$BOARD_ID.upload.speed=57600
+$BOARD_ID.bootloader.low_fuses=0xFF
+$BOARD_ID.bootloader.high_fuses=0xDA
+$BOARD_ID.bootloader.extended_fuses=0x05
+$BOARD_ID.bootloader.path=atmega
+$BOARD_ID.bootloader.file=ATmegaBOOT_168_atmega328.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega328p
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=eightanaloginputs
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
+
+read -d '' board_nano168 << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=arduino
+$BOARD_ID.upload.maximum_size=14336
+$BOARD_ID.upload.speed=19200
+$BOARD_ID.bootloader.low_fuses=0xff
+$BOARD_ID.bootloader.high_fuses=0xdd
+$BOARD_ID.bootloader.extended_fuses=0x00
+$BOARD_ID.bootloader.path=atmega
+$BOARD_ID.bootloader.file=ATmegaBOOT_168_diecimila.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega168
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=eightanaloginputs
+EOF
+
+read -d '' board_micro << EOF
 
 
 ############################################################## 
@@ -61,62 +281,133 @@ $BOARD_ID.build.core=arduino9
 $BOARD_ID.build.variant=micro
 $BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
 EOF
+
+read -d '' board_mega2560 << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=wiring
+$BOARD_ID.upload.maximum_size=258048
+$BOARD_ID.upload.speed=115200
+$BOARD_ID.bootloader.low_fuses=0xFF
+$BOARD_ID.bootloader.high_fuses=0xD8
+$BOARD_ID.bootloader.extended_fuses=0xFD
+$BOARD_ID.bootloader.path=stk500v2
+$BOARD_ID.bootloader.file=stk500boot_v2_$BOARD_ID.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega2560
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=mega
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
+
+read -d '' board_mega << EOF
+    
+     
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=arduino
+$BOARD_ID.upload.maximum_size=126976
+$BOARD_ID.upload.speed=57600
+$BOARD_ID.bootloader.low_fuses=0xFF
+$BOARD_ID.bootloader.high_fuses=0xDA
+$BOARD_ID.bootloader.extended_fuses=0xF5
+$BOARD_ID.bootloader.path=atmega
+$BOARD_ID.bootloader.file=ATmegaBOOT_168_atmega1280.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x0F
+$BOARD_ID.build.mcu=atmega1280
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.core=arduino
+$BOARD_ID.build.variant=mega
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
 		
 		cp -r $ARDUINO_PATH/hardware/arduino/cores/arduino $ARDUINO_PATH/hardware/arduino/cores/arduino9
 		cp -f arduino/* $ARDUINO_PATH/hardware/arduino/cores/arduino9
 		cp -r sketchbook $SKETCHBOOK_PATH
-		echo "$to_append" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+
+		
+		if [[ $ARDUINO_BOARD == "leonardo" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_leonardo" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "micro" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_micro" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "mega" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_mega" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "mega2560" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_mega2560" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "uno" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_uno" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "nano168" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_nano168" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "nano328" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_nano328" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "duemilanove328" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_duemilanove328" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		elif [[ $ARDUINO_BOARD == "duemilanove168" ]]; then
+			echo " " >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+			echo "$board_duemilanove168" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		else
+			echo "Carte '$ARDUINO_BOARD' inconnue"
+			echo ""
+			help
+		fi
 		
 }
 
-
+if [ $# -ge "2" ]; then
+	ARDUINO_PATH=$1
+	SKETCHBOOK_PATH=$2
+else
+	help
+fi
 
 #arduino folder
-if [ $# -lt "1" ]; then
-	echo -n "Entrez le répertoire de configuration d'Arduino: "
-	read ARDUINO_PATH
-else
-	if [[ $1 == "--help" ]]; then
+if [[ $1 == "--help" ]]; then
 		help
-	else
-		ARDUINO_PATH=$1
-	fi	
 fi
 
 if [ -d $ARDUINO_PATH/hardware/arduino/cores/ ]; then 
 	if [ -r $ARDUINO_PATH/hardware/arduino/cores/  -a -w $ARDUINO_PATH/hardware/arduino/cores/ ]; then
-		echo "Dossier '$ARDUINO_PATH/hardware/arduino/cores/' OK (R/W)"
+		if [ $LANGUE == "fr" ]; then
+			echo "Dossier '$ARDUINO_PATH/hardware/arduino/cores/' OK (R/W)"
+		else 
+			echo "Folder '$ARDUINO_PATH/hardware/arduino/cores/' OK (R/W)"
+		fi
 	else
-		echo "Erreur permissions non accordées pour le dossier '$ARDUINO_PATH/hardware/arduino/cores/'"
+		if [ $LANGUE == "fr" ]; then
+			echo "Erreur permissions non accordées pour le dossier '$ARDUINO_PATH/hardware/arduino/cores/'"
+		else 
+			echo "Error: permission denied for '$ARDUINO_PATH/hardware/arduino/cores/' ( read and/or write )"
+		fi
 		exit -1
 	fi
 else
-	echo "Erreur impossible de trouver la configuration d'arduino" 
+	if [ $LANGUE == "fr" ]; then
+		echo "Erreur impossible de trouver la configuration d'arduino dans '$ARDUINO_PATH/hardware/arduino/cores/'" 
+	else 
+		echo "Error impossible to find the arduino configuration dans '$ARDUINO_PATH/hardware/arduino/cores/'" 
+	fi
 	exit -1
 fi
 
 
-#sketchbook folder
-if [ $# -lt "2" ]; then
-	echo -n "Entrez le répertoire de sketchbook: "
-	read SKETCHBOOK_PATH
-else
-	SKETCHBOOK_PATH=$2		
-fi
-
-
-#Board name
-if [ $# -ge "3" ]; then
-	BOARD_NAME=$3
-fi
-
-
-#board id
-if [ $# -ge "4" ]; then
-	BOARD_ID=$4
-fi
 
 
 
 install
 
+exit 0
