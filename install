@@ -1,0 +1,122 @@
+#!/bin/sh
+
+
+
+
+ARDUINO_PATH=""
+SKETCHBOOK_PATH=""
+BOARD_ID="leonardo9"
+BOARD_NAME="Arduino Leonardo 9 bits serial"
+
+function help
+{
+	read -d '' help_msg << EOF
+
+Srcipt d'installation des différents composants
+Usage:
+	install [ ARDUINO_PATH [ SKETCHBOOK_PATH [ NEW_BOARD_NAME [ NEW_BOARD_ID ] ] ] ]
+		ARDUINO_PATH: Le chemin du dossier de configuration ( contenant le dossier 'hardware' )
+			L'utilisateur doit avoir accès en R/W aux différents sous dossiers et sous fichiers
+			pour que l'installation se déroule correctement
+			Si la valeur n'est pas précisée en argument, elle vous sera demandée lors de l'exécution
+									
+		SKETCHBOOK_PATH: Le chemin de votre sketchbook d'Arduino
+			Si la valeur n'est pas précisée en argument, elle vous sera demandée lors de l'exécution
+		
+		NEW_BOARD_NAME (defaut: '$BOARD_NAME' ): Le nom de la carte, tel qu'il s'affichera dans l'IDE Arduino
+		
+		NEW_BOARD_ID (defaut: '$BOARD_ID' ): L'id (interne à l'IDE ARDUINO) de la carte
+		
+EOF
+	echo "$help_msg"
+	exit 0
+	
+}
+
+function install
+{
+		
+		read -d '' to_append << EOF
+
+
+############################################################## 
+
+$BOARD_ID.name=$BOARD_NAME
+$BOARD_ID.upload.protocol=avr109
+$BOARD_ID.upload.maximum_size=28672
+$BOARD_ID.upload.speed=57600
+$BOARD_ID.upload.disable_flushing=true
+$BOARD_ID.bootloader.low_fuses=0xff
+$BOARD_ID.bootloader.high_fuses=0xd8
+$BOARD_ID.bootloader.extended_fuses=0xcb
+$BOARD_ID.bootloader.path=caterina
+$BOARD_ID.bootloader.file=Caterina-Micro.hex
+$BOARD_ID.bootloader.unlock_bits=0x3F
+$BOARD_ID.bootloader.lock_bits=0x2F
+$BOARD_ID.build.mcu=atmega32u4
+$BOARD_ID.build.f_cpu=16000000L
+$BOARD_ID.build.vid=0x2341
+$BOARD_ID.build.pid=0x8037
+$BOARD_ID.build.core=arduino9
+$BOARD_ID.build.variant=micro
+$BOARD_ID.build.cppoption1=-fno-use-cxa-atexit
+EOF
+		
+		cp -r $ARDUINO_PATH/hardware/arduino/cores/arduino $ARDUINO_PATH/hardware/arduino/cores/arduino9
+		cp -f arduino/* $ARDUINO_PATH/hardware/arduino/cores/arduino9
+		cp -r sketchbook $SKETCHBOOK_PATH
+		echo "$to_append" >> "$ARDUINO_PATH/hardware/arduino/boards.txt"
+		
+}
+
+
+
+#arduino folder
+if [ $# -lt "1" ]; then
+	echo -n "Entrez le répertoire de configuration d'Arduino: "
+	read ARDUINO_PATH
+else
+	if [[ $1 == "--help" ]]; then
+		help
+	else
+		ARDUINO_PATH=$1
+	fi	
+fi
+
+if [ -d $ARDUINO_PATH/hardware/arduino/cores/ ]; then 
+	if [ -r $ARDUINO_PATH/hardware/arduino/cores/  -a -w $ARDUINO_PATH/hardware/arduino/cores/ ]; then
+		echo "Dossier '$ARDUINO_PATH/hardware/arduino/cores/' OK (R/W)"
+	else
+		echo "Erreur permissions non accordées pour le dossier '$ARDUINO_PATH/hardware/arduino/cores/'"
+		exit -1
+	fi
+else
+	echo "Erreur impossible de trouver la configuration d'arduino" 
+	exit -1
+fi
+
+
+#sketchbook folder
+if [ $# -lt "2" ]; then
+	echo -n "Entrez le répertoire de sketchbook: "
+	read SKETCHBOOK_PATH
+else
+	SKETCHBOOK_PATH=$2		
+fi
+
+
+#Board name
+if [ $# -ge "3" ]; then
+	BOARD_NAME=$3
+fi
+
+
+#board id
+if [ $# -ge "4" ]; then
+	BOARD_ID=$4
+fi
+
+
+
+install
+
