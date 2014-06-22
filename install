@@ -43,22 +43,22 @@ function help
 {
 	read -d '' help_msg << EOF
 
-Srcipt d'installation des différents composants
+Srcipt d'installation des diffÃ©rents composants
 Usage:
 	install  ARDUINO_PATH  SKETCHBOOK_PATH OPTIONS
 		ARDUINO_PATH: Le chemin du dossier de configuration ( contenant le dossier 'hardware' )
-			L'utilisateur doit avoir accès en R/W aux différents sous dossiers et sous fichiers
-			pour que l'installation se déroule correctement
+			L'utilisateur doit avoir accÃ¨s en R/W aux diffÃ©rents sous dossiers et sous fichiers
+			pour que l'installation se dÃ©roule correctement
 									
 		SKETCHBOOK_PATH: Le chemin de votre sketchbook d'Arduino
 		
 		OPTIONS:
 		  -n | --name NEW_BOARD_NAME (defaut: '$BOARD_NAME' ): Le nom de la carte, tel qu'il s'affichera dans l'IDE Arduino
 		
-		  -id | --id NEW_BOARD_ID (defaut: '$BOARD_ID' ): L'id (interne à l'IDE ARDUINO) de la carte
+		  -id | --id NEW_BOARD_ID (defaut: '$BOARD_ID' ): L'id (interne Ã  l'IDE ARDUINO) de la carte
 		
 		  -b | --board BOARD: La carte cible (defaut: $ARDUINO_BOARD)
-			 Carte supportées parmi:
+			 Carte supportÃ©es parmi:
 			   nano168
 			   nano328
 			   mega2560
@@ -387,7 +387,7 @@ if [ -d $ARDUINO_PATH/hardware/arduino/cores/ ]; then
 		fi
 	else
 		if [ $LANGUE == "fr" ]; then
-			echo "Erreur permissions non accordées pour le dossier '$ARDUINO_PATH/hardware/arduino/cores/'"
+			echo "Erreur permissions non accordÃ©es pour le dossier '$ARDUINO_PATH/hardware/arduino/cores/'"
 		else 
 			echo "Error: permission denied for '$ARDUINO_PATH/hardware/arduino/cores/' ( read and/or write )"
 		fi
