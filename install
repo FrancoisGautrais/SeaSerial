@@ -49,10 +49,8 @@ Usage:
 		ARDUINO_PATH: Le chemin du dossier de configuration ( contenant le dossier 'hardware' )
 			L'utilisateur doit avoir accès en R/W aux différents sous dossiers et sous fichiers
 			pour que l'installation se déroule correctement
-			Si la valeur n'est pas précisée en argument, elle vous sera demandée lors de l'exécution
 									
 		SKETCHBOOK_PATH: Le chemin de votre sketchbook d'Arduino
-			Si la valeur n'est pas précisée en argument, elle vous sera demandée lors de l'exécution
 		
 		OPTIONS:
 		  -n | --name NEW_BOARD_NAME (defaut: '$BOARD_NAME' ): Le nom de la carte, tel qu'il s'affichera dans l'IDE Arduino

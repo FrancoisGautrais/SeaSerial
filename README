@@ -1,1 +1,86 @@
 
+I - English
+	1 - Install
+	2 - Using
+	3 - License
+II - Français
+	1 - Installation
+	2 - Utilisation
+	3 - Licence
+	
+	
+
+I - English
+	1 - Install
+		Place tou in the root directory of this library
+		Then start the install:
+			Various component installation Script
+			Usage:
+				install  ARDUINO_PATH  SKETCHBOOK_PATH OPTIONS
+					ARDUINO_PATH: The arduino configuration folder ( which contains the folder 'hardware' )
+						The user MUST have acces in R/W to the various subfolders and subfiles
+						to correctly install it
+												
+					SKETCHBOOK_PATH: The path of your arduino sketchbook
+					
+					OPTIONS:
+						-n | --name NEW_BOARD_NAME (defaut: 'Arduino micro 9 bits serial' ): The name of the board which will show in the IDE Arduino
+					
+						-id | --id NEW_BOARD_ID (defaut: 'micro_9' ): The id (IDE Arduino internal parameter) of the board
+					
+						-b | --board BOARD: The target board (defaut: micro)
+						 Supported boards:
+							 nano168
+							 nano328
+							 mega2560
+							 mega
+							 uno
+							 leonardo
+							 micro
+							 duemilanove328
+							 duemilanove168
+
+	2 - Using:
+		To use this Arduino library/modification just select the new installed card 
+		Select in the Arduino IDE Tools > card > The new card
+	
+	3 - License
+		All the files are under the LGPL license please sea the LICENSE file
+
+II - Français
+	1 - Installation
+		Placez vous dans le réperoire de la bibliothèque
+		Puis lancez l'installation via le fchier install
+		
+			Srcipt d'installation des différents composants
+			Usage:
+				install  ARDUINO_PATH  SKETCHBOOK_PATH OPTIONS
+					ARDUINO_PATH: Le chemin du dossier de configuration ( contenant le dossier 'hardware' )
+						L'utilisateur doit avoir accès en R/W aux différents sous dossiers et sous fichiers
+						pour que l'installation se déroule correctement
+												
+					SKETCHBOOK_PATH: Le chemin de votre sketchbook d'Arduino
+					
+					OPTIONS:
+						-n | --name NEW_BOARD_NAME (defaut: 'Arduino micro 9 bits serial' ): Le nom de la carte, tel qu'il s'affichera dans l'IDE Arduino
+					
+						-id | --id NEW_BOARD_ID (defaut: 'micro_9' ): L'id (interne à l'IDE ARDUINO) de la carte
+					
+						-b | --board BOARD: La carte cible (defaut: micro)
+						 Carte supportées parmi:
+							 nano168
+							 nano328
+							 mega2560
+							 mega
+							 uno
+							 leonardo
+							 micro
+							 duemilanove328
+							 duemilanove168
+
+	2 - Utilisation:		
+		Pour utiliser cette bibliothèque/modification d'arduino, selctionnez la noucelle carte
+		Pour cela allez dans Outils > Type de carte > La nouvelle carte
+	
+	3 - Licence
+		Tous le contenu des fichiers est sous licence LGPL, erci de lire le fichier LICENSE
